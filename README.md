@@ -2,8 +2,8 @@
 
 ## Installation
 
-1) `git clone https://github.com/sarsanaee/Nachos_Operating_Systems_Fall_2016.git` </br>
-2) `sudo apt-get install build-essentials csh lpr` </br>
+1) `sudo apt-get install build-essentials git csh lpr` </br>
+2) `git clone https://github.com/sarsanaee/Nachos_Operating_Systems_Fall_2016.git` </br>
 3) `cd Nachos_Operating_Systems_Fall_2016` </br>
 4) `cd Nachos_Operating_Systems_Fall_2016` </br>
 5) Please extract source files from Necessary Package directory `tar -xf nachos.tar #take care of the names` and `tar -xf mips.tar #again take care of the names` </br>
