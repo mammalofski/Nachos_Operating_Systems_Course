@@ -12,3 +12,5 @@
 8) Go to the code directory `cd code` </br>
 9) Take a look at the prepfile.bash `cat prefile.bash` </br>
 10) You already know what is the `make` command so try it :) but do not expect everything goes well :))
+
+##### If you do not want to follow previous instructions, you can refer to [this](http://homes.cs.washington.edu/~tom/nachos/), however, there are a lot of usefull and interesting documents you probably want to read.
