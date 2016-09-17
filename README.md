@@ -2,10 +2,12 @@
 
 ## Installation
 
+**Don't forget to fork the project because you have to work on this project with your own team in your own repository during this semester**
+
 1) `sudo apt-get install build-essentials git csh lpr` </br>
 2) `git clone https://github.com/sarsanaee/Nachos_Operating_Systems_Fall_2016.git` </br>
 3) `cd Nachos_Operating_Systems_Fall_2016` </br>
-4) Please extract source files from Necessary Package directory `tar -xf nachos.tar #take care of the names` and `tar -xf mips.tar #again take care of the names` </br>
+4) Please extract source files from Necessary Package directory `tar -xf nachos.tar -C ../ #take care of the names` and `tar -xf mips.tar -C ../ #again take care of the names` </br>
 5) Go to the nachos-3.4 directory `cd nachos-3.4` </br>
 6) Look around the directories, README files and so on. </br>
 7) Go to the code directory `cd code` </br>
