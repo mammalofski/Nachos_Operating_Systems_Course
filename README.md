@@ -16,3 +16,8 @@
 10) You already know what is the `make` command so try it :) but do not expect everything goes well :)) </br>
 
 ##### If you do not want to follow previous instructions, you can refer to [this](http://homes.cs.washington.edu/~tom/nachos/), however, there are a lot of useful and interesting documents you probably want to read.
+
+## Here is the visual installation :)
+
+[![asciicast](https://asciinema.org/a/b6pc2zok0gagrmyp1e0oi67e2.png)](https://asciinema.org/a/b6pc2zok0gagrmyp1e0oi67e2)
+
