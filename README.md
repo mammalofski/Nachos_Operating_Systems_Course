@@ -5,8 +5,8 @@
 **Don't forget to fork the project because you have to work on this project with your own team in your own repository during this semester**
 
 1) `sudo apt-get install build-essential git csh lpr libc6-dev-i386 gcc-multilib g++-multilib` </br>
-2) `git clone https://github.com/sarsanaee/Nachos_Operating_Systems_Fall_2016.git` </br>
-3) `cd Nachos_Operating_Systems_Fall_2016` </br>
+2) `git clone https://github.com/sarsanaee/Nachos_Operating_Systems_Course.git` </br>
+3) `cd Nachos_Operating_Systems_Course` </br>
 4) Please extract source files from Necessary Package directory `tar -xf cse120su10-nachos.tgz -C ../`</br> 
 5) Please extract source files from Necessary Package directory `tar -xf mips-x86.linux-xgcc.tgz -C ../` </br>
 6) `cd ../nachos-3.4` </br>
