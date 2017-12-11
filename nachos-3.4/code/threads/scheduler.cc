@@ -30,6 +30,7 @@
 Scheduler::Scheduler()
 { 
     readyList = new List; 
+    // readyList2 = new List; // lower priority list
 } 
 
 //----------------------------------------------------------------------
@@ -40,7 +41,26 @@ Scheduler::Scheduler()
 Scheduler::~Scheduler()
 { 
     delete readyList; 
+    // delete readyList2;
 } 
+
+// ------------
+// Scheduler::threadPriorityList
+//  find out the type of the thread for Multi-level queue
+//  whether high priority or low priority
+// ------------
+
+// void Scheduler::threadPriorityList (Thread *thread)
+// {
+//		// lets initialize a score for each thread to set the priority list of them
+//		// score depends on burst time and priority
+//		int threadScore = (1000 - thread->burstTime) + thread->priority
+// 		if (threadScore > 10)
+//			return 'high'
+//		else
+//			return 'low
+// }
+
 
 //----------------------------------------------------------------------
 // Scheduler::ReadyToRun
@@ -54,6 +74,10 @@ void
 Scheduler::ReadyToRun (Thread *thread)
 {
     DEBUG('t', "Putting thread %s on ready list.\n", thread->getName());
+    // if (this->threadPriorityList == 'high')
+    //		do sjf
+    // else
+    //		do priority
 
     thread->setStatus(READY);
     readyList->Append((void *)thread);
