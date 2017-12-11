@@ -12,6 +12,7 @@
 #include "copyright.h"
 #include "system.h"
 
+
 // testnum is set in main.cc
 int testnum = 1;
 
@@ -28,13 +29,54 @@ void
 SimpleThread(int which)
 {
     int num;
-    
-    for (num = 0; num < 6; num++) {
+    for (num = 0; num < 5; num++) {
 	printf("*** thread %d looped %d times\n", which, num);
-        currentThread->Yield();
+		sleep(1);
+		currentThread->Yield();
     }
 }
 
+void
+SimpleThread2(int which)
+{
+    int num;
+    for (num = 0; num < 5; num++) {
+	printf("*** thread %d looped %d times\n", which, num);
+		sleep(2);
+		currentThread->Yield();
+    }
+}
+
+void
+SimpleThread3(int which)
+{
+    int num;
+    for (num = 0; num < 5; num++) {
+	printf("*** thread %d looped %d times\n", which, num);
+		sleep(3000);
+		currentThread->Yield();
+    }
+}
+void
+SimpleThread4(int which)
+{
+    int num;
+    for (num = 0; num < 5; num++) {
+	printf("*** thread %d looped %d times\n", which, num);
+		sleep(4);
+		currentThread->Yield();
+    }
+}
+void
+SimpleThread5(int which)
+{
+    int num;
+    for (num = 0; num < 5; num++) {
+	printf("*** thread %d looped %d times\n", which, num);
+		sleep(5);
+		currentThread->Yield();
+    }
+}
 //----------------------------------------------------------------------
 // ThreadTest1
 // 	Set up a ping-pong between two threads, by forking a thread 
@@ -46,12 +88,11 @@ ThreadTest1()
 {
     DEBUG('t', "Entering ThreadTest1");
 
-    Thread *t1 = new Thread("forked thread", 5);
-    Thread *t2 = new Thread("forked thread", 4);
-    Thread *t3 = new Thread("forked thread", 3);
-    Thread *t4 = new Thread("forked thread", 15);
-    Thread *t5 = new Thread("forked thread", 1);
-
+    Thread *t1 = new Thread("forked thread");
+    Thread *t2 = new Thread("forked thread");
+    Thread *t3 = new Thread("forked thread");
+    Thread *t4 = new Thread("forked thread");
+    Thread *t5 = new Thread("forked thread");
 
     t1->Fork(SimpleThread, 1);
     t2->Fork(SimpleThread, 2);
@@ -59,7 +100,13 @@ ThreadTest1()
     t4->Fork(SimpleThread, 4);
     t5->Fork(SimpleThread, 5);
 
-    //SimpleThread(0);
+    t1->Fork(SimpleThread, 1);
+	t2->Fork(SimpleThread, 2);
+	t3->Fork(SimpleThread, 3);
+	t4->Fork(SimpleThread, 4);
+	t5->Fork(SimpleThread, 5);
+
+
 }
 
 //----------------------------------------------------------------------

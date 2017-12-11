@@ -32,14 +32,12 @@
 //	"threadName" is an arbitrary string, useful for debugging.
 //----------------------------------------------------------------------
 
-Thread::Thread(char* threadName, int pr)
+Thread::Thread(char* threadName)
 {
     name = threadName;
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
-    priority = pr;
-
 #ifdef USER_PROGRAM
     space = NULL;
 #endif
@@ -182,13 +180,14 @@ Thread::Yield ()
     ASSERT(this == currentThread);
     
     DEBUG('t', "Yielding thread \"%s\"\n", getName());
-    
-    nextThread = scheduler->FindNextToRun();
-    if (nextThread != NULL) {
-	scheduler->ReadyToRun(this);
-	scheduler->Run(nextThread);
+    if (this->get_job_time()){
+		nextThread = scheduler->FindNextToRun();
+		if (nextThread != NULL) {
+		scheduler->ReadyToRun(this);
+		scheduler->Run(nextThread);
+		}
+		(void) interrupt->SetLevel(oldLevel);
     }
-    (void) interrupt->SetLevel(oldLevel);
 }
 
 //----------------------------------------------------------------------
