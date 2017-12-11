@@ -81,7 +81,7 @@ class Thread {
     int machineState[MachineStateSize];  // all registers except for stackTop
 
   public:
-    Thread(char* debugName);		// initialize a Thread 
+    Thread(char* debugName);		// initialize a Thread
     ~Thread(); 				// deallocate a Thread
 					// NOTE -- thread being deleted
 					// must not be running when delete 
@@ -89,7 +89,7 @@ class Thread {
 
     // basic thread operations
 
-    void Fork(VoidFunctionPtr func, int arg); 	// Make thread run (*func)(arg)
+    void Fork(VoidFunctionPtr func, int arg, int priority); 	// Make thread run (*func)(arg)
     void Yield();  				// Relinquish the CPU if any 
 						// other thread is runnable
     void Sleep();  				// Put the thread to sleep and 
@@ -100,9 +100,8 @@ class Thread {
 						// overflowed its stack
     void setStatus(ThreadStatus st) { status = st; }
     char* getName() { return (name); }
+    int getPriority(){return priority;}
     void Print() { printf("%s, ", name); }
-    float get_job_time() {return jobtime;}
-    void set_job_time(float given_time){ jobtime = given_time}
 
   private:
     // some of the private data for this class is listed above
@@ -112,7 +111,8 @@ class Thread {
 					// (If NULL, don't deallocate stack)
     ThreadStatus status;		// ready, running or blocked
     char* name;
-    float jobtime = NULL;
+
+    int priority;
 
     void StackAllocate(VoidFunctionPtr func, int arg);
     					// Allocate a stack for thread.

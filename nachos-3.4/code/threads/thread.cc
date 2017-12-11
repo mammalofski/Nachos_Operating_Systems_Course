@@ -38,6 +38,8 @@ Thread::Thread(char* threadName)
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
+
+
 #ifdef USER_PROGRAM
     space = NULL;
 #endif
@@ -85,11 +87,11 @@ Thread::~Thread()
 //----------------------------------------------------------------------
 
 void 
-Thread::Fork(VoidFunctionPtr func, int arg)
+Thread::Fork(VoidFunctionPtr func, int arg, int pr)
 {
     DEBUG('t', "Forking thread \"%s\" with func = 0x%x, arg = %d\n",
 	  name, (int) func, arg);
-    
+    priority = pr;
     StackAllocate(func, arg);
 
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
@@ -180,14 +182,13 @@ Thread::Yield ()
     ASSERT(this == currentThread);
     
     DEBUG('t', "Yielding thread \"%s\"\n", getName());
-    if (this->get_job_time()){
-		nextThread = scheduler->FindNextToRun();
-		if (nextThread != NULL) {
-		scheduler->ReadyToRun(this);
-		scheduler->Run(nextThread);
-		}
-		(void) interrupt->SetLevel(oldLevel);
+    
+    nextThread = scheduler->FindNextToRun();
+    if (nextThread != NULL) {
+	scheduler->ReadyToRun(this);
+	scheduler->Run(nextThread);
     }
+    (void) interrupt->SetLevel(oldLevel);
 }
 
 //----------------------------------------------------------------------

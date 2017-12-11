@@ -21,7 +21,6 @@
 #include "copyright.h"
 #include "scheduler.h"
 #include "system.h"
-#include "time.h"
 
 //----------------------------------------------------------------------
 // Scheduler::Scheduler
@@ -31,7 +30,6 @@
 Scheduler::Scheduler()
 { 
     readyList = new List; 
-    std::map <std::string, float> table;
 } 
 
 //----------------------------------------------------------------------
@@ -58,13 +56,10 @@ Scheduler::ReadyToRun (Thread *thread)
     DEBUG('t', "Putting thread %s on ready list.\n", thread->getName());
 
     thread->setStatus(READY);
-    if (thread->get_job_time() == NULL){
-    	readyList->Prepend((void *)thread);
-    }
-    else{
-    	readyList->SortedInsert((void *)thread, thread->get_job_time());
-    }
+
+    readyList->SortedInsert((void *)thread, thread->getPriority() );
 }
+
 //----------------------------------------------------------------------
 // Scheduler::FindNextToRun
 // 	Return the next thread to be scheduled onto the CPU.
@@ -109,8 +104,6 @@ Scheduler::Run (Thread *nextThread)
 					    // had an undetected stack overflow
 
     currentThread = nextThread;		    // switch to the next thread
-    clock_t t1, t2;
-    t1 = clock();
     currentThread->setStatus(RUNNING);      // nextThread is now running
     
     DEBUG('t', "Switching from thread \"%s\" to thread \"%s\"\n",
@@ -133,11 +126,7 @@ Scheduler::Run (Thread *nextThread)
         delete threadToBeDestroyed;
 	threadToBeDestroyed = NULL;
     }
-    t2 = clock();
-    float spent_time = (float)t2 - (float)t1;
-    DEBUG('t', "job time of %s is %f", nextThread->getName() , spent_time);
-    nextThread -> set_job_time(spent_time);
-    DEBUG('t', "test time %s is %f", nextThread->getName() , nextThread->get_job_time());
+    
 #ifdef USER_PROGRAM
     if (currentThread->space != NULL) {		// if there is an address space
         currentThread->RestoreUserState();     // to restore, do it.
