@@ -13,7 +13,10 @@
 #include "system.h"
 #include "time.h"
 #include <unistd.h>
-
+#include "time.h"
+#include <unistd.h>
+#include <sys/time.h>
+#include "ctime"
 // testnum is set in main.cc
 int testnum = 1;
 
@@ -84,6 +87,14 @@ SimpleThread5(int which)
 //	to call SimpleThread, and then calling SimpleThread ourselves.
 //----------------------------------------------------------------------
 
+unsigned long getTimeStamp2 () {
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+    unsigned long time_in_micros = 1000000 * tv.tv_sec + tv.tv_usec;
+    return time_in_micros;
+}
+
+
 void
 ThreadTest1()
 {
@@ -95,11 +106,14 @@ ThreadTest1()
     Thread *t4 = new Thread("forked thread4");
     Thread *t5 = new Thread("forked thread5");
 
+    //
+    printf("%s\n", currentThread->getName());
     t1->Fork(SimpleThread, 1);
     t2->Fork(SimpleThread2, 2);
     t3->Fork(SimpleThread3, 3);
-    t4->Fork(SimpleThread, 4);
-    t5->Fork(SimpleThread, 5);
+    t4->Fork(SimpleThread4, 4);
+    t5->Fork(SimpleThread5, 5);
+    SimpleThread(0);
     /*
     Thread *t6 = new Thread("forked thread1");
 	Thread *t7 = new Thread("forked thread2");
@@ -123,6 +137,7 @@ ThreadTest1()
 void
 ThreadTest()
 {
+	//currentThread->set_t1(getTimeStamp2 ());
     switch (testnum) {
     case 1:
 	ThreadTest1();

@@ -240,9 +240,9 @@ int List::searchkey(void *key){
 
 	int i = 0 ;
 	ListElement *ptr;
-	if (IsEmpty())
+	if (IsEmpty()){
 		return NULL;
-
+	}
 	else {		// look for first elt in list bigger than item
 	        for (ptr = first; ptr->next != NULL; ptr = ptr->next) {
 	        	if (ptr->item == key){
@@ -269,7 +269,7 @@ List::searchindex(int index){
 			ptr = ptr->next;
 		}
 	}
-	return ptr->item;
+	return  ptr->item;
 }
 
 

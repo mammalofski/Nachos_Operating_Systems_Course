@@ -21,7 +21,8 @@
 #include "system.h"
 #include "time.h"
 #include <unistd.h>
-
+#include <sys/time.h>
+#include "ctime"
 #define STACK_FENCEPOST 0xdeadbeef	// this is put at the top of the
 					// execution stack, for detecting 
 					// stack overflows
@@ -93,9 +94,7 @@ Thread::Fork(VoidFunctionPtr func, int arg)
 	  name, (int) func, arg);
     
     StackAllocate(func, arg);
-    clock_t a1;
-    a1 = clock();
-    t1 = (int)((float)a1 * 1000000);
+
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
     scheduler->ReadyToRun(this, NULL);	// ReadyToRun assumes that interrupts
 					// are disabled!
@@ -175,6 +174,7 @@ Thread::Finish ()
 // 	Similar to Thread::Sleep(), but a little different.
 //----------------------------------------------------------------------
 
+
 void
 Thread::Yield ()
 {
@@ -184,15 +184,16 @@ Thread::Yield ()
     ASSERT(this == currentThread);
     
     DEBUG('t', "Yielding thread \"%s\"\n", getName());
-    List * jobnameslist = scheduler->get_jobnames();
-    clock_t a1;
-    a1 = clock();
-    //if (this->get_job_time()){
+
+    //clock_t a1;
+    //a1 = clock();
     if (t2 == NULL){
-    	t2 = (int)((float)a1 * 1000000);
+    	//t2 = (int)a1 - t1;
+    	//t2 = getTimeStamp() - t1;
+    	//printf("in thread %s is %d\n",getName(), t2);
     	nextThread = scheduler->FindNextToRun();
 		if (nextThread != NULL) {
-			scheduler->ReadyToRun(this, t2);
+			scheduler->ReadyToRun(this, t2-t1);
 			scheduler->Run(nextThread);
 		}
 		(void) interrupt->SetLevel(oldLevel);

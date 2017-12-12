@@ -33,7 +33,11 @@
 // Copyright (c) 1992-1993 The Regents of the University of California.
 // All rights reserved.  See copyright.h for copyright notice and limitation 
 // of liability and disclaimer of warranty provisions.
-
+#include <unistd.h>
+#include "time.h"
+#include <unistd.h>
+#include <sys/time.h>
+#include "ctime"
 #ifndef THREAD_H
 #define THREAD_H
 
@@ -88,6 +92,12 @@ class Thread {
 					// is called
 
     // basic thread operations
+    unsigned long getTimeStamp3 () {
+        struct timeval tv;
+        gettimeofday(&tv,NULL);
+        unsigned long time_in_micros = 1000000 * tv.tv_sec + tv.tv_usec;
+        return time_in_micros;
+    }
 
     void Fork(VoidFunctionPtr func, int arg); 	// Make thread run (*func)(arg)
     void Yield();  				// Relinquish the CPU if any 
@@ -98,12 +108,18 @@ class Thread {
     
     void CheckOverflow();   			// Check if thread has 
 						// overflowed its stack
-    void setStatus(ThreadStatus st) { status = st; }
+    void setStatus(ThreadStatus st) { status = st;
+    	if (status == RUNNING) this->set_t1(getTimeStamp3 ());
+    }
     char* getName() { return (name); }
     void Print() { printf("%s, ", name); }
     float get_job_time() {return jobtime;}
     void set_job_time(float given_time){ jobtime = given_time;}
-
+    void set_t1(unsigned long t){t1 = t;}
+    void set_t2(unsigned long t){t2 = t;}
+    unsigned long  get_t1(){return t1;}
+    unsigned long  get_t2(){return t2;}
+    int getBurstTime(){return this->t2 - this->t1;}
   private:
     // some of the private data for this class is listed above
     
@@ -113,8 +129,8 @@ class Thread {
     ThreadStatus status;		// ready, running or blocked
     char* name;
     float jobtime = NULL;
-    int t1 = NULL;
-    int t2 = NULL;
+    unsigned long int t1 = NULL;
+    unsigned long int t2 = NULL;
     void StackAllocate(VoidFunctionPtr func, int arg);
     					// Allocate a stack for thread.
 					// Used internally by Fork()

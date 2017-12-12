@@ -22,11 +22,20 @@
 #include "scheduler.h"
 #include "system.h"
 #include "time.h"
-
+#include <unistd.h>
+#include "ctime"
+#include <sys/time.h>
 //----------------------------------------------------------------------
 // Scheduler::Scheduler
 // 	Initialize the list of ready but not running threads to empty.
 //----------------------------------------------------------------------
+
+unsigned long getTimeStamp () {
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+    unsigned long time_in_micros = 1000000 * tv.tv_sec + tv.tv_usec;
+    return time_in_micros;
+}
 
 Scheduler::Scheduler()
 { 
@@ -63,20 +72,26 @@ Scheduler::ReadyToRun (Thread *thread, int first_time)
     thread->setStatus(READY);
     if (first_time == NULL){
     	if (jobnames->searchkey(thread->getName()) == NULL){
+    		printf("2\n");
     		readyList->Prepend((void *)thread);
     	}
     	else{
     		int idx = (int)jobnames->searchkey(thread->getName());
+    		printf("3\n");
     		void * t = jobtimes->searchindex(idx);
-    		int ct = *(int *)&t;
+    		int ct = *(int *)t;
+    		//printf("%d", ct);
+    		//printf("called time for %s is %d \n",thread->getName(), ct);
     		readyList->SortedInsert((void *)thread,ct);
     	}
     }else{
+    	//printf("%d", first_time);
+    	printf("1\n");
     	jobnames->Append((char*) thread->getName());
     	int * ptr_time = &first_time;
     	jobtimes->Append(ptr_time);
-    	//readyList->SortedInsert((void *)thread,first_time);
-    	readyList->Append((void *)thread);
+    	readyList->SortedInsert((void *)thread,first_time);
+    	//readyList->Append((void *)thread);
     }
 
 }
@@ -160,9 +175,19 @@ Scheduler::Run (Thread *nextThread)
     // in switch.s.  You may have to think
     // a bit to figure out what happens after this, both from the point
     // of view of the thread and from the perspective of the "outside world".
-
+    //////////////////////////////////////////////////////
+    //clock_t a1;
+    //a1 = clock();
+   	//int t1 = (int)a1;
+    unsigned long t2 = getTimeStamp();
+           	//printf("t in scheldeu %s is %d\n",  nextThread->getName(),t1);
+    oldThread->set_t2(t2);
+    printf("scascasc%d\n",oldThread->getBurstTime());
     SWITCH(oldThread, nextThread);
-    
+
+    //unsigned long t1 = getTimeStamp();
+    //printf("t in scheldeu %s is %d\n",  nextThread->getName(),t1);
+    //nextThread->set_t1(t1);
     DEBUG('t', "Now in thread \"%s\"\n", currentThread->getName());
 
     // If the old thread gave up the processor because it was finishing,
