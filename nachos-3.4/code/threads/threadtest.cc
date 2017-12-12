@@ -46,20 +46,45 @@ ThreadTest1()
 {
     DEBUG('t', "Entering ThreadTest1");
 
-    Thread *t1 = new Thread("forked thread");
-    Thread *t2 = new Thread("forked thread");
-    Thread *t3 = new Thread("forked thread");
-    Thread *t4 = new Thread("forked thread");
-    Thread *t5 = new Thread("forked thread");
+    Thread *t1 = new Thread("forked thread"); //*creating new thread
+    Thread *t2 = new Thread("forked thread"); //*creating new thread
+    Thread *t3 = new Thread("forked thread"); //*creating new thread
+    Thread *t4 = new Thread("forked thread"); //*creating new thread
+    Thread *t5 = new Thread("forked thread"); //*creating new thread
 
 
-    t1->Fork(SimpleThread, 1, 5);
-    t2->Fork(SimpleThread, 2, 4);
-    t3->Fork(SimpleThread, 3, 3);
-    t4->Fork(SimpleThread, 4, 15);
-    t5->Fork(SimpleThread, 5, 1);
+    t1->Fork(SimpleThread, 1, 5); //forking thread 1 with priority 5
+    t2->Fork(SimpleThread, 2, 4); //forking thread 2 with priority 4
+    t3->Fork(SimpleThread, 3, 3); //forking thread 3 with priority 3
+    t4->Fork(SimpleThread, 4, 15); //forking thread 4 with priority 15
+    t5->Fork(SimpleThread, 5, 1); //forking thread 5 with priority 1
+
+    //------------------------------------------------------------------
+    //******HINT: Our Priority scheduling prioritizes threads which have lower priority value******
+    //------------------------------------------------------------------
 
     //SimpleThread(0);
+}
+
+void
+ThreadTest2(){
+	DEBUG('t', "Entering Threadtest2");
+
+    Thread *t1 = new Thread("forked thread"); //*creating new thread
+    Thread *t2 = new Thread("forked thread"); //*creating new thread
+    Thread *t3 = new Thread("forked thread"); //*creating new thread
+    Thread *t4 = new Thread("forked thread"); //*creating new thread
+
+    t1->Fork(SimpleThread, 1, 234); //forking thread 1 with priority 5
+    t2->Fork(SimpleThread, 2, 456); //forking thread 2 with priority 4
+    t3->Fork(SimpleThread, 3, 645); //forking thread 3 with priority 3
+    t4->Fork(SimpleThread, 4, 567); //forking thread 4 with priority 15
+
+    SimpleThread(0); // main always runs first.
+
+    //------------------------------------------------------------------
+    //******HINT: Our Priority scheduling prioritizes threads which have lower priority value******
+    //------------------------------------------------------------------
 }
 
 //----------------------------------------------------------------------
@@ -72,7 +97,8 @@ ThreadTest()
 {
     switch (testnum) {
     case 1:
-	ThreadTest1();
+	//ThreadTest1();
+	ThreadTest2();
 	break;
     default:
 	printf("No test specified.\n");
