@@ -31,7 +31,8 @@
 Scheduler::Scheduler()
 { 
     readyList = new List; 
-    std::map <std::string, float> table;
+    jobnames = new List;
+    jobtimes = new List;
 } 
 
 //----------------------------------------------------------------------
@@ -42,6 +43,8 @@ Scheduler::Scheduler()
 Scheduler::~Scheduler()
 { 
     delete readyList; 
+    delete jobtimes;
+    delete jobnames;
 } 
 
 //----------------------------------------------------------------------
@@ -53,18 +56,56 @@ Scheduler::~Scheduler()
 //----------------------------------------------------------------------
 
 void
+Scheduler::ReadyToRun (Thread *thread, int first_time)
+{
+    DEBUG('t', "Putting thread %s on ready list.\n", thread->getName());
+
+    thread->setStatus(READY);
+    if (first_time == NULL){
+    	if (jobnames->searchkey(thread->getName()) == NULL){
+    		readyList->Prepend((void *)thread);
+    	}
+    	else{
+    		int idx = (int)jobnames->searchkey(thread->getName());
+    		void * t = jobtimes->searchindex(idx);
+    		int ct = *(int *)&t;
+    		readyList->SortedInsert((void *)thread,ct);
+    	}
+    }else{
+    	jobnames->Append((char*) thread->getName());
+    	int * ptr_time = &first_time;
+    	jobtimes->Append(ptr_time);
+    	//readyList->SortedInsert((void *)thread,first_time);
+    	readyList->Append((void *)thread);
+    }
+
+}
+
+
+
+
+/*
+void
 Scheduler::ReadyToRun (Thread *thread)
 {
     DEBUG('t', "Putting thread %s on ready list.\n", thread->getName());
 
     thread->setStatus(READY);
-    if (thread->get_job_time() == NULL){
+    if (jobnames->searchkey(thread->getName()) == NULL){
     	readyList->Prepend((void *)thread);
     }
     else{
-    	readyList->SortedInsert((void *)thread, thread->get_job_time());
+    	int idx = (int)jobnames->searchkey(thread->getName());
+    	void * t = jobtimes->searchindex(idx);
+    	float flt = *(float *)&t;
+    	float st = (float)flt  * 1000000;
+    	st = (int)st;
+    	readyList->SortedInsert((void *)thread,st);
     }
 }
+*/
+
+
 //----------------------------------------------------------------------
 // Scheduler::FindNextToRun
 // 	Return the next thread to be scheduled onto the CPU.
@@ -109,8 +150,7 @@ Scheduler::Run (Thread *nextThread)
 					    // had an undetected stack overflow
 
     currentThread = nextThread;		    // switch to the next thread
-    clock_t t1, t2;
-    t1 = clock();
+
     currentThread->setStatus(RUNNING);      // nextThread is now running
     
     DEBUG('t', "Switching from thread \"%s\" to thread \"%s\"\n",
@@ -133,11 +173,20 @@ Scheduler::Run (Thread *nextThread)
         delete threadToBeDestroyed;
 	threadToBeDestroyed = NULL;
     }
-    t2 = clock();
-    float spent_time = (float)t2 - (float)t1;
-    DEBUG('t', "job time of %s is %f", nextThread->getName() , spent_time);
-    nextThread -> set_job_time(spent_time);
-    DEBUG('t', "test time %s is %f", nextThread->getName() , nextThread->get_job_time());
+    ///////////////////////////////
+    //t2 = clock();
+    //float spent_time = ((float)t2 - (float)t1);
+    //float * rr = &spent_time;
+    //DEBUG('t', "job time of %s is %f", nextThread->getName() , spent_time);
+    //nextThread->set_job_time(spent_time);
+    //printf("%s",nextThread->getName());
+    //if (jobnames->searchkey(nextThread->getName()) == NULL){
+   // 	printf("%s",nextThread->getName());
+  //  	jobnames->Append((char*) nextThread->getName());
+  //  	jobtimes->Append(rr);
+  //  }
+    //DEBUG('t', "test time %s is %f", nextThread->getName() , nextThread->get_job_time());
+    /////////////////////////////////////////
 #ifdef USER_PROGRAM
     if (currentThread->space != NULL) {		// if there is an address space
         currentThread->RestoreUserState();     // to restore, do it.

@@ -92,7 +92,7 @@ Semaphore::V()
 
     thread = (Thread *)queue->Remove();
     if (thread != NULL)	   // make thread ready, consuming the V immediately
-	scheduler->ReadyToRun(thread);
+	scheduler->ReadyToRun(thread, NULL);
     value++;
     (void) interrupt->SetLevel(oldLevel);
 }

@@ -19,6 +19,8 @@
 #include "switch.h"
 #include "synch.h"
 #include "system.h"
+#include "time.h"
+#include <unistd.h>
 
 #define STACK_FENCEPOST 0xdeadbeef	// this is put at the top of the
 					// execution stack, for detecting 
@@ -91,9 +93,11 @@ Thread::Fork(VoidFunctionPtr func, int arg)
 	  name, (int) func, arg);
     
     StackAllocate(func, arg);
-
+    clock_t a1;
+    a1 = clock();
+    t1 = (int)((float)a1 * 1000000);
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
-    scheduler->ReadyToRun(this);	// ReadyToRun assumes that interrupts 
+    scheduler->ReadyToRun(this, NULL);	// ReadyToRun assumes that interrupts
 					// are disabled!
     (void) interrupt->SetLevel(oldLevel);
 }    
@@ -180,11 +184,24 @@ Thread::Yield ()
     ASSERT(this == currentThread);
     
     DEBUG('t', "Yielding thread \"%s\"\n", getName());
-    if (this->get_job_time()){
-		nextThread = scheduler->FindNextToRun();
+    List * jobnameslist = scheduler->get_jobnames();
+    clock_t a1;
+    a1 = clock();
+    //if (this->get_job_time()){
+    if (t2 == NULL){
+    	t2 = (int)((float)a1 * 1000000);
+    	nextThread = scheduler->FindNextToRun();
 		if (nextThread != NULL) {
-		scheduler->ReadyToRun(this);
-		scheduler->Run(nextThread);
+			scheduler->ReadyToRun(this, t2);
+			scheduler->Run(nextThread);
+		}
+		(void) interrupt->SetLevel(oldLevel);
+    }
+    else{
+    	nextThread = scheduler->FindNextToRun();
+		if (nextThread != NULL) {
+			scheduler->ReadyToRun(this, NULL);
+			scheduler->Run(nextThread);
 		}
 		(void) interrupt->SetLevel(oldLevel);
     }

@@ -102,7 +102,7 @@ class Thread {
     char* getName() { return (name); }
     void Print() { printf("%s, ", name); }
     float get_job_time() {return jobtime;}
-    void set_job_time(float given_time){ jobtime = given_time}
+    void set_job_time(float given_time){ jobtime = given_time;}
 
   private:
     // some of the private data for this class is listed above
@@ -113,7 +113,8 @@ class Thread {
     ThreadStatus status;		// ready, running or blocked
     char* name;
     float jobtime = NULL;
-
+    int t1 = NULL;
+    int t2 = NULL;
     void StackAllocate(VoidFunctionPtr func, int arg);
     					// Allocate a stack for thread.
 					// Used internally by Fork()

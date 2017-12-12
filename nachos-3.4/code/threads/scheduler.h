@@ -22,15 +22,18 @@ class Scheduler {
     Scheduler();			// Initialize list of ready threads 
     ~Scheduler();			// De-allocate ready list
 
-    void ReadyToRun(Thread* thread);	// Thread can be dispatched.
+    void ReadyToRun(Thread* thread, int first_time);	// Thread can be dispatched.
     Thread* FindNextToRun();		// Dequeue first thread on the ready 
 					// list, if any, and return thread.
     void Run(Thread* nextThread);	// Cause nextThread to start running
     void Print();			// Print contents of ready list
-    
+    List * get_jobnames(){return jobnames;}
+    List * get_jobtimes(){return jobtimes;}
   private:
     List *readyList;  		// queue of threads that are ready to run,
-				// but not running
+		// but not running
+    List *jobnames;
+    List *jobtimes;
 };
 
 #endif // SCHEDULER_H

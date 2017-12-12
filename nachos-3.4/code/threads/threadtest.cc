@@ -11,7 +11,8 @@
 
 #include "copyright.h"
 #include "system.h"
-
+#include "time.h"
+#include <unistd.h>
 
 // testnum is set in main.cc
 int testnum = 1;
@@ -53,7 +54,7 @@ SimpleThread3(int which)
     int num;
     for (num = 0; num < 5; num++) {
 	printf("*** thread %d looped %d times\n", which, num);
-		sleep(3000);
+		sleep(3);
 		currentThread->Yield();
     }
 }
@@ -88,24 +89,29 @@ ThreadTest1()
 {
     DEBUG('t', "Entering ThreadTest1");
 
-    Thread *t1 = new Thread("forked thread");
-    Thread *t2 = new Thread("forked thread");
-    Thread *t3 = new Thread("forked thread");
-    Thread *t4 = new Thread("forked thread");
-    Thread *t5 = new Thread("forked thread");
+    Thread *t1 = new Thread("forked thread1");
+    Thread *t2 = new Thread("forked thread2");
+    Thread *t3 = new Thread("forked thread3");
+    Thread *t4 = new Thread("forked thread4");
+    Thread *t5 = new Thread("forked thread5");
 
     t1->Fork(SimpleThread, 1);
-    t2->Fork(SimpleThread, 2);
-    t3->Fork(SimpleThread, 3);
+    t2->Fork(SimpleThread2, 2);
+    t3->Fork(SimpleThread3, 3);
     t4->Fork(SimpleThread, 4);
     t5->Fork(SimpleThread, 5);
-
-    t1->Fork(SimpleThread, 1);
-	t2->Fork(SimpleThread, 2);
-	t3->Fork(SimpleThread, 3);
-	t4->Fork(SimpleThread, 4);
-	t5->Fork(SimpleThread, 5);
-
+    /*
+    Thread *t6 = new Thread("forked thread1");
+	Thread *t7 = new Thread("forked thread2");
+	Thread *t8 = new Thread("forked thread3");
+	//Thread *t9 = new Thread("forked thread4");
+	//Thread *t10 = new Thread("forked thread5");
+    t6->Fork(SimpleThread, 1);
+	t7->Fork(SimpleThread2, 2);
+	t8->Fork(SimpleThread3, 3);
+	//t9->Fork(SimpleThread, 4);
+	//t10->Fork(SimpleThread, 5);
+*/
 
 }
 

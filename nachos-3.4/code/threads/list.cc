@@ -275,6 +275,37 @@ List::searchindex(int index){
 
 
 
+void *
+List::indexremove(int index){
+
+	ListElement *ptr = first;
+	void *thing;
+
+	if (IsEmpty())
+		return NULL;
+
+	if (index == NULL){
+		return NULL;
+	}
+	thing = first->item;
+	if (first == last) {	// list had one item, now has none
+		first = NULL;
+	    last = NULL;
+	    return thing;
+	}
+	if (index == 0){
+		first = first->next;
+		return thing;
+	}
+	else{
+		for (int i = 0; i < index; i++){
+			ptr = ptr->next;
+		}
+		thing = ptr->next->item;
+		ptr->next = ptr->next->next;
+	}
+	return thing;
+}
 
 
 
