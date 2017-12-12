@@ -27,10 +27,19 @@
 // 	Initialize the list of ready but not running threads to empty.
 //----------------------------------------------------------------------
 
+unsigned long getTimeStamp () {
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+    unsigned long time_in_micros = 1000000 * tv.tv_sec + tv.tv_usec;
+    return time_in_micros;
+}
+
 Scheduler::Scheduler()
 { 
     readyList = new List; 
     readyList2 = new List; // lower priority list
+    jobnames = new List;
+    jobtimes = new List;
 } 
 
 //----------------------------------------------------------------------
@@ -42,6 +51,8 @@ Scheduler::~Scheduler()
 { 
     delete readyList; 
     delete readyList2;
+    delete jobtimes;
+    delete jobnames;
 } 
 
 // ------------
@@ -78,7 +89,29 @@ Scheduler::ReadyToRun (Thread *thread)
     // if the priority of the thread was high then put the thread in the sjf list
     if (this->threadPriorityList(thread) == 'high') {
 
-    	// do sjf ready to run
+    	if (first_time == NULL){
+    	    	if (jobnames->searchkey(thread->getName()) == NULL){
+    	    		printf("2\n");
+    	    		readyList2->Prepend((void *)thread);
+    	    	}
+    	    	else{
+    	    		int idx = (int)jobnames->searchkey(thread->getName());
+    	    		printf("3\n");
+    	    		void * t = jobtimes->searchindex(idx);
+    	    		int ct = *(int *)t;
+    	    		//printf("%d", ct);
+    	    		//printf("called time for %s is %d \n",thread->getName(), ct);
+    	    		readyList2->SortedInsert((void *)thread,ct);
+    	    	}
+    	    }else{
+    	    	//printf("%d", first_time);
+    	    	printf("1\n");
+    	    	jobnames->Append((char*) thread->getName());
+    	    	int * ptr_time = &first_time;
+    	    	jobtimes->Append(ptr_time);
+    	    	readyList->SortedInsert((void *)thread,first_time);
+    	    	//readyList->Append((void *)thread);
+    	    }
 
     }
     // if the priority of the thread was low then put the thread in the priority list
@@ -107,7 +140,7 @@ Scheduler::FindNextToRun ()
 	    return (Thread*)readyList->Remove(NULL);
 	else
 		// then run low priority threads
-	 	return (Thread*)readyList1->Remove(NULL);
+	 	return (Thread*)readyList2->Remove(NULL);
     // return (Thread *)readyList->Remove();
 }
 
@@ -150,6 +183,10 @@ Scheduler::Run (Thread *nextThread)
     // in switch.s.  You may have to think
     // a bit to figure out what happens after this, both from the point
     // of view of the thread and from the perspective of the "outside world".
+
+    unsigned long t2 = getTimeStamp();
+               	//printf("t in scheldeu %s is %d\n",  nextThread->getName(),t1);
+    oldThread->set_t2(t2);
 
     SWITCH(oldThread, nextThread);
     
