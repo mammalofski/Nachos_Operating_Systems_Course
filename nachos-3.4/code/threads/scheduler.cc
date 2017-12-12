@@ -93,7 +93,9 @@ Scheduler::ReadyToRun (Thread *thread)
 
 Thread *
 Scheduler::FindNextToRun ()
+
 {
+	// find out which list should be running now
     return (Thread *)readyList->Remove();
 }
 
