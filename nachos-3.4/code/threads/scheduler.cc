@@ -79,7 +79,7 @@ Scheduler::ReadyToRun (Thread *thread)
     if (this->threadPriorityList(thread) == 'high') {
 
     	// do sjf ready to run
-    	continue
+
     }
     // if the priority of the thread was low then put the thread in the priority list
     else {
