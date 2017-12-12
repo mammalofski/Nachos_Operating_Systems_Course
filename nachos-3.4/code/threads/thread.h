@@ -90,17 +90,21 @@ class Thread {
     // basic thread operations
 
     void Fork(VoidFunctionPtr func, int arg); 	// Make thread run (*func)(arg)
+    void ForkPR(VoidFunctionPtr func, int arg, int pr);
     void Yield();  				// Relinquish the CPU if any 
 						// other thread is runnable
     void Sleep();  				// Put the thread to sleep and 
 						// relinquish the processor
     void Finish();  				// The thread is done executing
+
     
     void CheckOverflow();   			// Check if thread has 
 						// overflowed its stack
     void setStatus(ThreadStatus st) { status = st; }
+    int getPriority(){return priority;}
     char* getName() { return (name); }
     void Print() { printf("%s, ", name); }
+    int getBurstTime (){return (this->t2 - this->t1);}
 
   private:
     // some of the private data for this class is listed above

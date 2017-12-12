@@ -54,7 +54,7 @@ void Scheduler::threadPriorityList (Thread *thread)
 {
 	// lets initialize a score for each thread to set the priority list of them
 	// score depends on burst time and priority
-	int threadScore = (1000 - thread->burstTime) + thread->getPriority();
+	int threadScore = (1000 - thread->getBurstTime()) + thread->getPriority();
  	if (threadScore > 10)
 		return 'high'
 	else
@@ -74,14 +74,15 @@ void
 Scheduler::ReadyToRun (Thread *thread)
 {
     DEBUG('t', "Putting thread %s on ready list.\n", thread->getName());
+    thread->setStatus(READY);
+    // if the priority of the thread was high then put the thread in the sjf list
     if (this->threadPriorityList(thread) == 'high') {
-    	thread->setStatus(READY);
-    	// do sjf
+
+    	// do sjf ready to run
     	continue
     }
-
+    // if the priority of the thread was low then put the thread in the priority list
     else {
-    	thread->setStatus(READY);
     	readyList->SortedInsert((void *)thread, thread->getPriority());
     }
 
@@ -101,7 +102,13 @@ Scheduler::FindNextToRun ()
 
 {
 	// find out which list should be running now
-    return (Thread *)readyList->Remove();
+	// wait until high priority threads are done
+	if (!(readyList->IsEmpty()))
+	    return (Thread*)readyList->Remove(NULL);
+	else
+		// then run low priority threads
+	 	return (Thread*)readyList1->Remove(NULL);
+    // return (Thread *)readyList->Remove();
 }
 
 //----------------------------------------------------------------------
