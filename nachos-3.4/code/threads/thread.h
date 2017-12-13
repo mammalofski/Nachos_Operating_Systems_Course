@@ -109,17 +109,27 @@ class Thread {
     void CheckOverflow();   			// Check if thread has 
 						// overflowed its stack
     void setStatus(ThreadStatus st) { status = st;
-    	if (status == RUNNING) this->set_t1(getTimeStamp3 ());
+    	if (status == RUNNING){
+    		if(t1 == NULL){
+    			this->set_t1(getTimeStamp3 ());
+    		}
+    	}
     }
     char* getName() { return (name); }
     void Print() { printf("%s, ", name); }
     float get_job_time() {return jobtime;}
     void set_job_time(float given_time){ jobtime = given_time;}
-    void set_t1(unsigned long t){t1 = t;}
-    void set_t2(unsigned long t){t2 = t;}
+    void set_t1(unsigned long t){this->t1 = t;}
+    void set_t2(unsigned long t){
+    	if (this->t2 == NULL){
+    		this->t2 = t;
+    	}
+    }
     unsigned long  get_t1(){return t1;}
     unsigned long  get_t2(){return t2;}
     int getBurstTime(){return this->t2 - this->t1;}
+    int get_check(){return this->first_check;}
+    void add_check(){this->first_check++;}
   private:
     // some of the private data for this class is listed above
     
@@ -131,6 +141,7 @@ class Thread {
     float jobtime = NULL;
     unsigned long int t1 = NULL;
     unsigned long int t2 = NULL;
+    int first_check = 0;
     void StackAllocate(VoidFunctionPtr func, int arg);
     					// Allocate a stack for thread.
 					// Used internally by Fork()

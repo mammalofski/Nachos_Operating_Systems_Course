@@ -187,18 +187,11 @@ Thread::Yield ()
 
     //clock_t a1;
     //a1 = clock();
-    if (t2 == NULL){
+    /*
+    if (first_check == 0){
     	//t2 = (int)a1 - t1;
     	//t2 = getTimeStamp() - t1;
     	//printf("in thread %s is %d\n",getName(), t2);
-    	nextThread = scheduler->FindNextToRun();
-		if (nextThread != NULL) {
-			scheduler->ReadyToRun(this, t2-t1);
-			scheduler->Run(nextThread);
-		}
-		(void) interrupt->SetLevel(oldLevel);
-    }
-    else{
     	nextThread = scheduler->FindNextToRun();
 		if (nextThread != NULL) {
 			scheduler->ReadyToRun(this, NULL);
@@ -206,6 +199,61 @@ Thread::Yield ()
 		}
 		(void) interrupt->SetLevel(oldLevel);
     }
+    else{
+		if (first_check > 2){
+			nextThread = scheduler->FindNextToRun();
+			if (nextThread != NULL) {
+				scheduler->ReadyToRun(this, NULL);
+				scheduler->Run(nextThread);
+			}
+			(void) interrupt->SetLevel(oldLevel);
+		}
+		else{
+			nextThread = scheduler->FindNextToRun();
+			if (nextThread != NULL) {
+				scheduler->ReadyToRun(this, t2-t1);
+				scheduler->Run(nextThread);
+			}
+			(void) interrupt->SetLevel(oldLevel);
+		}
+    }
+    */
+    if (first_check == 0){
+        	//t2 = (int)a1 - t1;
+        	//t2 = getTimeStamp() - t1;
+        	//printf("in thread %s is %d\n",getName(), t2);
+        	nextThread = scheduler->FindNextToRun();
+    		if (nextThread != NULL) {
+    			scheduler->ReadyToRun(this, NULL);
+    			scheduler->Run(nextThread);
+    		}
+    		(void) interrupt->SetLevel(oldLevel);
+        }
+    //printf("in thread %s is %d\n",getName(), first_check);
+    if(first_check > 0){
+		if (first_check > 1){
+			nextThread = scheduler->FindNextToRun();
+			if (nextThread != NULL) {
+				scheduler->ReadyToRun(this, NULL);
+				scheduler->Run(nextThread);
+			}
+			(void) interrupt->SetLevel(oldLevel);
+		}
+		else{
+			unsigned long int e = t2- t1;
+			int z = (int)e;
+			//printf("in thread %s is %d\n",getName(), t1);
+			//printf("in thread %s is %d\n",getName(), t2);
+
+			nextThread = scheduler->FindNextToRun();
+			if (nextThread != NULL) {
+				scheduler->ReadyToRun(this, z);
+				scheduler->Run(nextThread);
+			}
+			(void) interrupt->SetLevel(oldLevel);
+		}
+	}
+
 }
 
 //----------------------------------------------------------------------

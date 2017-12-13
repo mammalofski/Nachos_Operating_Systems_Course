@@ -72,21 +72,22 @@ Scheduler::ReadyToRun (Thread *thread, int first_time)
     thread->setStatus(READY);
     if (first_time == NULL){
     	if (jobnames->searchkey(thread->getName()) == NULL){
-    		printf("2\n");
-    		readyList->Prepend((void *)thread);
+    		//printf("2\n");
+    		//readyList->Prepend((void *)thread);
+    		readyList->Append((void *)thread);
     	}
     	else{
     		int idx = (int)jobnames->searchkey(thread->getName());
-    		printf("3\n");
+    		//printf("3\n");
     		void * t = jobtimes->searchindex(idx);
     		int ct = *(int *)t;
-    		//printf("%d", ct);
+    		//printf("%d\n", idx);
     		//printf("called time for %s is %d \n",thread->getName(), ct);
     		readyList->SortedInsert((void *)thread,ct);
     	}
     }else{
-    	//printf("%d", first_time);
-    	printf("1\n");
+    	//printf("%d\n", first_time);
+    	//printf("1\n");
     	jobnames->Append((char*) thread->getName());
     	int * ptr_time = &first_time;
     	jobtimes->Append(ptr_time);
@@ -180,9 +181,10 @@ Scheduler::Run (Thread *nextThread)
     //a1 = clock();
    	//int t1 = (int)a1;
     unsigned long t2 = getTimeStamp();
-           	//printf("t in scheldeu %s is %d\n",  nextThread->getName(),t1);
+    //printf("t in scheldeu %s is %d\n",  nextThread->getName(),t1);
     oldThread->set_t2(t2);
-    printf("scascasc%d\n",oldThread->getBurstTime());
+    oldThread->add_check();
+    //printf("scascasc%d\n",oldThread->getBurstTime());
     SWITCH(oldThread, nextThread);
 
     //unsigned long t1 = getTimeStamp();

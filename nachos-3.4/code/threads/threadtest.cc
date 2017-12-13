@@ -106,8 +106,8 @@ ThreadTest1()
     Thread *t4 = new Thread("forked thread4");
     Thread *t5 = new Thread("forked thread5");
 
-    //
-    printf("%s\n", currentThread->getName());
+
+    //printf("%s\n", currentThread->getName());
     t1->Fork(SimpleThread, 1);
     t2->Fork(SimpleThread2, 2);
     t3->Fork(SimpleThread3, 3);
