@@ -36,6 +36,7 @@
 
 #ifndef THREAD_H
 #define THREAD_H
+#define CHILD_LIVE -2
 
 #include "copyright.h"
 #include "utility.h"
@@ -101,15 +102,50 @@ class Thread {
     void setStatus(ThreadStatus st) { status = st; }
     char* getName() { return (name); }
     void Print() { printf("%s, ", name); }
+    int pid;
+    int ppid;
+    int childCount; // To store the number of children of the thread
+
+    void incrementChildCount(){
+        childCount++;
+    };     // Increments the count of the number of variables
+    void decrementChildCount(){
+        childCount--;
+    }; // Decrement the count of the number of variables
+
+
+    // A public pointer the parent
+    Thread *parent;
+
+    // To store the child pid
+    int *child_pids;
+
+    // Return the threads pid
+    int getPid() {
+        return pid;
+    };
+
+    int getPpid(){
+        return ppid;
+    };
+
+    void initializeChildStatus(int child_pid) {
+        	DEBUG('J', "Adding %d to the child list of %d\n", child_pid, pid);
+            child_pids[childCount] = child_pid;
+            child_status[childCount] = CHILD_LIVE;
+            incrementChildCount();
+        };
 
   private:
     // some of the private data for this class is listed above
-    
+    int *child_status;
+
     int* stack; 	 		// Bottom of the stack 
 					// NULL if this is the main thread
 					// (If NULL, don't deallocate stack)
     ThreadStatus status;		// ready, running or blocked
     char* name;
+
 
     void StackAllocate(VoidFunctionPtr func, int arg);
     					// Allocate a stack for thread.

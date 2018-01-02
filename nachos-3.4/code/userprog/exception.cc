@@ -56,6 +56,45 @@ ExceptionHandler(ExceptionType which)
     if ((which == SyscallException) && (type == SC_Halt)) {
 	DEBUG('a', "Shutdown, initiated by user program.\n");
    	interrupt->Halt();
+    } else if ((which == SyscallException) && (type == SC_Fork)) {
+    	DEBUG('a', "Fork, initiated by user program.\n");
+    	int myFunc = machine->ReadRegister(4);
+
+    	// now make the prevPCReg the current one
+    	// copy the address of myFunc to PCReg
+    	// and save the next one
+    	machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
+    	machine->WriteRegister(PCReg, myFunc);
+    	machine->WriteRegister(NextPCReg, machine->ReadRegister(NextPCReg)+4);
+
+    	// then create the new thread
+    	Thread *child = new Thread("forked thread");
+
+    	// Set the parent of the child process
+    	child->parent = currentThread;
+
+    	// Add the child to the parent's list
+    	currentThread->initializeChildStatus(child->getPid());
+
+    	// make room for the new born
+    	child->space = currentThread->space;
+    	//child->space = new AddrSpace(currentThread->space->getNumPages(), currentThread->space->getStartPhysPage());
+
+    	// Change the return address register to zero and save state
+    	machine->WriteRegister(2, 0);
+    	child->SaveUserState();
+
+    	// Setting the return value of the parent thread
+    	machine->WriteRegister(2, child->getPid());
+
+    	// The child is now ready to run
+    	IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
+    	scheduler->ReadyToRun(child);
+    	(void) interrupt->SetLevel(oldLevel); // re-enable interrupts
+
+
+    } else if ((which == SyscallException) && (type == SC_Exit)) {
+
     } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
 	ASSERT(FALSE);
