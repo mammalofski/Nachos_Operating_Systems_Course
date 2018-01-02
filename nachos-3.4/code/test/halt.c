@@ -24,7 +24,7 @@ main()
 {
     //Halt();
 
-	Fork(testFunc);
+	Fork(&testFunc);
 	return 0;
     /* not reached */
 }

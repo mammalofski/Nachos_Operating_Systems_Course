@@ -57,6 +57,7 @@ ExceptionHandler(ExceptionType which)
 	DEBUG('a', "Shutdown, initiated by user program.\n");
    	interrupt->Halt();
     } else if ((which == SyscallException) && (type == SC_Fork)) {
+    	printf("entering fork");
     	DEBUG('a', "Fork, initiated by user program.\n");
     	int myFunc = machine->ReadRegister(4);
 
@@ -94,6 +95,7 @@ ExceptionHandler(ExceptionType which)
 
 
     } else if ((which == SyscallException) && (type == SC_Exit)) {
+    	printf("exiting\n");
 
     } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
