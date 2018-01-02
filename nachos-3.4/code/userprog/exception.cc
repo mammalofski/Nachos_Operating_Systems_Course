@@ -25,6 +25,12 @@
 #include "system.h"
 #include "syscall.h"
 
+
+void myRun (int myFunc) {
+
+	machine->WriteRegister(PCReg, myFunc);
+	machine->Run();
+}
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -53,6 +59,7 @@ ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
     int nextPCRegTemp = machine->ReadRegister(NextPCReg) + 4;
+    Thread * childThread;
 
     if ((which == SyscallException) && (type == SC_Halt)) {
 	DEBUG('a', "Shutdown, initiated by user program.\n");
@@ -66,24 +73,25 @@ ExceptionHandler(ExceptionType which)
     	// now make the prevPCReg the current one
     	// copy the address of myFunc to PCReg
     	// and save the next one
-    	machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
-    	printf("test 1\n");
-    	machine->WriteRegister(PCReg, (int) myFunc);
-    	printf("test 2\n");
+    	//machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
+
+    	//machine->WriteRegister(PCReg, myFunc);
+
     	//machine->Run();
-    	printf("test 3\n");
-    	// machine->WriteRegister(NextPCReg, machine->ReadRegister(NextPCReg));
-    	printf("test 4\n");
+
+    	machine->WriteRegister(NextPCReg, machine->ReadRegister(NextPCReg)+4);
+
 
     	// then create the new thread
     	Thread *child = new Thread("forked thread");
-    	printf("child pid 0: %d\n", child->getPid());
+    	childThread = child;
+
+    	//printf("child pid 0: %d\n", child->getPid());
     	//machine->Run();
-    	printf("test 4\n");
 
     	// Set the parent of the child process
     	child->parent = currentThread;
-    	printf("test 5\n");
+    	//printf("test 5\n");
 
     	// Add the child to the parent's list
     	currentThread->initializeChildStatus(child->getPid());
@@ -91,40 +99,28 @@ ExceptionHandler(ExceptionType which)
 
     	// make room for the new born
     	child->space = currentThread->space;
-    	printf("test 6\n");
+    	//printf("test 6\n");
     	//child->space = new AddrSpace(currentThread->space->getNumPages(), currentThread->space->getStartPhysPage());
 
     	// Change the return address register to zero and save state
-    	machine->WriteRegister(2, 0);
-    	printf("child pid 1: %d\n", child->getPid());
+    	//machine->WriteRegister(2, 0);
+
     	child->SaveUserState();
 
     	// Setting the return value of the parent thread
-    	machine->WriteRegister(2, child->getPid());
+    	//machine->WriteRegister(2, child->getPid());
     	printf("child pid 2: %d\n", child->getPid());
 
-    	// The child is now ready to run
-    	IntStatus oldLevel = interrupt->SetLevel(IntOff);	// disable interrupts
-    	scheduler->ReadyToRun(child);
-    	(void) interrupt->SetLevel(oldLevel); // re-enable interrupts
 
-    	machine->Run();
+    	child->Fork(myRun, myFunc);
 
 
 
     } else if ((which == SyscallException) && (type == SC_Exit)) {
-    	int exitNum = machine->ReadRegister(4);
-    	printf("exitNum: %d\n");
-    	printf("exiting thread %d \n", currentThread->getPid());
 
-    	machine->WriteRegister(NextPCReg, nextPCRegTemp);
+    	currentThread->Finish();
 
-
-
-
-
-
-    	interrupt->Halt();
+    	//interrupt->Halt();
 
 
     } else {
@@ -132,3 +128,5 @@ ExceptionHandler(ExceptionType which)
 	ASSERT(FALSE);
     }
 }
+
+
