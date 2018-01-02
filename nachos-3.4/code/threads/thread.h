@@ -104,7 +104,7 @@ class Thread {
     void Print() { printf("%s, ", name); }
     int pid;
     int ppid;
-    int childCount; // To store the number of children of the thread
+    int childCount = 0; // To store the number of children of the thread
 
     void incrementChildCount(){
         childCount++;
@@ -131,8 +131,13 @@ class Thread {
 
     void initializeChildStatus(int child_pid) {
         	DEBUG('J', "Adding %d to the child list of %d\n", child_pid, pid);
+        	DEBUG('J', "child count %d\n", childCount);
+
+
             child_pids[childCount] = child_pid;
+            DEBUG('J', "after pid\n");
             child_status[childCount] = CHILD_LIVE;
+            DEBUG('J', "after child_live\n");
             incrementChildCount();
         };
 

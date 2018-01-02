@@ -57,7 +57,7 @@ ExceptionHandler(ExceptionType which)
 	DEBUG('a', "Shutdown, initiated by user program.\n");
    	interrupt->Halt();
     } else if ((which == SyscallException) && (type == SC_Fork)) {
-    	printf("entering fork");
+    	printf("entering fork\n");
     	DEBUG('a', "Fork, initiated by user program.\n");
     	int myFunc = machine->ReadRegister(4);
 
@@ -65,8 +65,8 @@ ExceptionHandler(ExceptionType which)
     	// copy the address of myFunc to PCReg
     	// and save the next one
     	machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
-    	machine->WriteRegister(PCReg, myFunc);
-    	machine->WriteRegister(NextPCReg, machine->ReadRegister(NextPCReg)+4);
+    	machine->WriteRegister(PCReg, machine->ReadRegister(NextPCReg));
+    	machine->WriteRegister(NextPCReg, myFunc);
 
     	// then create the new thread
     	Thread *child = new Thread("forked thread");
@@ -75,7 +75,7 @@ ExceptionHandler(ExceptionType which)
     	child->parent = currentThread;
 
     	// Add the child to the parent's list
-    	currentThread->initializeChildStatus(child->getPid());
+    	// currentThread->initializeChildStatus(child->getPid());
 
     	// make room for the new born
     	child->space = currentThread->space;
@@ -96,6 +96,7 @@ ExceptionHandler(ExceptionType which)
 
     } else if ((which == SyscallException) && (type == SC_Exit)) {
     	printf("exiting\n");
+    	interrupt->Halt();
 
     } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
