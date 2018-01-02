@@ -16,7 +16,7 @@
 #include "switch.h"
 #include "synch.h"
 #include "system.h"
-#include "exception.h"
+
 
 int testFunc () {
 	printf("soheil chegha sexye");
@@ -29,7 +29,7 @@ main()
 {
     //Halt();
 
-	Fork(&testFunc);
+	//Fork(testFunc);
 	return 0;
     /* not reached */
 }
