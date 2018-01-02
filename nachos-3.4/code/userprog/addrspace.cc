@@ -69,6 +69,9 @@ AddrSpace::AddrSpace(OpenFile *executable)
     if ((noffH.noffMagic != NOFFMAGIC) &&
 		(WordToHost(noffH.noffMagic) == NOFFMAGIC))
     	SwapHeader(&noffH);
+
+    printf(" no of magic%d\n", noffH.noffMagic);
+    printf("NOFFMAGIC %d\n", NOFFMAGIC);
     ASSERT(noffH.noffMagic == NOFFMAGIC);
 
 // how big is address space?
