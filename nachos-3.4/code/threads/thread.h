@@ -87,6 +87,8 @@ class Thread {
 					// NOTE -- thread being deleted
 					// must not be running when delete 
 					// is called
+    static int pidCount;            // Maintain a count of pids
+    static int threadCount; // Maintains a count of total threads
 
     // basic thread operations
 
@@ -104,7 +106,7 @@ class Thread {
     void Print() { printf("%s, ", name); }
     int pid;
     int ppid;
-    int childCount = 0; // To store the number of children of the thread
+    int childCount; // To store the number of children of the thread
 
     void incrementChildCount(){
         childCount++;

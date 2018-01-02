@@ -14,7 +14,10 @@
 
 
 
+
 int testFunc (int num) {
+
+	//Exit(10);
 	return num;
 
 }
@@ -25,6 +28,7 @@ main()
     //Halt();
 
 	Fork(testFunc);
+	//
 	return 0;
     /* not reached */
 }

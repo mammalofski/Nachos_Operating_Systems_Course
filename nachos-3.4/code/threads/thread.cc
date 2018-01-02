@@ -32,12 +32,33 @@
 //	"threadName" is an arbitrary string, useful for debugging.
 //----------------------------------------------------------------------
 
+int Thread::threadCount= 0;
+int Thread::pidCount = 0;
+
 Thread::Thread(char* threadName)
 {
     name = threadName;
     stackTop = NULL;
     stack = NULL;
     status = JUST_CREATED;
+
+    childCount = 0;
+    parent = NULL;
+
+    child_status = new int[100];
+    child_pids = new int[100];
+
+    pidCount = (pidCount + 1) % 100;
+    pid = pidCount;
+
+    ++threadCount;
+
+    if(pid == 1) {
+            ppid = 0;
+        } else {
+            ppid = currentThread->getPid();
+    }
+
 #ifdef USER_PROGRAM
     space = NULL;
 #endif
