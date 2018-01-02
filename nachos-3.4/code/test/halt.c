@@ -11,16 +11,11 @@
  */
 
 #include "syscall.h"
-#include "copyright.h"
-#include "thread.h"
-#include "switch.h"
-#include "synch.h"
-#include "system.h"
 
 
-int testFunc () {
-	printf("soheil chegha sexye");
-	return 0;
+
+int testFunc (int num) {
+	return num;
 
 }
 
@@ -29,7 +24,7 @@ main()
 {
     //Halt();
 
-	//Fork(testFunc);
+	Fork(testFunc);
 	return 0;
     /* not reached */
 }
