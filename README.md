@@ -17,4 +17,4 @@ Finally we call machine->Run so now the child will run the function which was pa
 
 6. After implementing Fork system call we needed a Join system call which it's job is actually just like wait ( it takes the forked child's pid and yields itself until it's child is done doing it;s job )
 
-7. At the end we handled Exit which finishes the current ( whether parent or child ) if current thread is child it signals the parent that it's done doing it's job and change it's status to BLOCKED.
+7. At the end we handled Exit which finishes the current ( whether parent or child ) if current thread is child it signals the parent that it's done doing it's job and change it's status to BLOCKED and parent continues running the rest of it's instructions.
