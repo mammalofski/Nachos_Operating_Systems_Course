@@ -98,7 +98,7 @@ ExceptionHandler(ExceptionType which)
     	// Change the return address register to zero and save state
     	//machine->WriteRegister(2, 10);
 
-    	// child->SaveUserState();
+    	child->SaveUserState();
 
     	child->Fork(myRun, myFunc);
     	printf("after fork pid: %d ppid: %d\n", currentThread->getPid(), currentThread->getPpid());
@@ -147,6 +147,10 @@ ExceptionHandler(ExceptionType which)
 
           //Already present in thread.cc
           currentThread->Yield();
+  } else if ((which == SyscallException) && (type == SC_Join)) {
+
+	  printf("joining pid: %d", currentThread->getPid());
+
   } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
 	ASSERT(FALSE);

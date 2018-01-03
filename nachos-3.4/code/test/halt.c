@@ -29,7 +29,7 @@ main()
 
 	Fork(testFunc);
 
-	Fork(testFunc);
+	//Fork(testFunc);
 	//
 	return 0;
     /* not reached */
