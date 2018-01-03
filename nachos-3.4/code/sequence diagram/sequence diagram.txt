@@ -1,0 +1,214 @@
+@startuml
+actor user
+user -> threads.main.cc: int main(int argc, char **argv)
+threads.main.cc -> threads.system.cc: void Initialize(int argc, char **argv)
+threads.system.cc --> threads.main.cc: <<void>>
+threads.main.cc -> userprog.progtest.cc: void StartProcess(char *filename)
+userprog.progtest.cc -> filesys.filesys.cc: OpenFile *Open(char *name)
+filesys.filesys.cc -> filesys.directory.cc: void FetchFrom(OpenFile *file)
+filesys.directory.cc -> filesys.openfile.cc: int ReadAt(char *into, int numBytes, int position)
+filesys.openfile.cc -> filesys.filehrd.cc: int FileLength()
+filesys.filehrd.cc --> filesys.openfile.cc: <<int numBytes>>
+filesys.openfile.cc -> filesys.synchdisk.cc: void ReadSector(int sectorNumber, char* data)
+filesys.synchdisk.cc -> threads.synch.cc: void Acquire()
+threads.synch.cc --> filesys.synchdisk.cc: <<void>>
+filesys.synchdisk.cc -> machine.disk.cc: void ReadRequest(int sectorNumber, char* data)
+machine.disk.cc -> machine.disk.cc: int ComputeLatency(int newSector, bool writing)
+machine.disk.cc -> machine.disk.cc: int TimeToSeek(int newSector, int *rotation)
+machine.disk.cc --> machine.disk.cc: <<int seek>>
+machine.disk.cc -> machine.disk.cc: int ModuloDiff(int to, int from)
+machine.disk.cc --> machine.disk.cc: <<int>>
+machine.disk.cc --> machine.disk.cc: <<int>>
+machine.disk.cc -> machine.sysdep.cc: void Lseek(int fd, int offset, int whence)
+machine.sysdep.cc --> machine.disk.cc: <<void>>
+machine.disk.cc -> machine.sysdep.cc: void Read(int fd, char *buffer, int nBytes)
+machine.sysdep.cc --> machine.disk.cc: <<void>>
+machine.disk.cc -> machine.disk.cc: void UpdateLast(int newSector)
+machine.disk.cc -> machine.disk.cc: int TimeToSeek(int newSector, int *rotation)
+machine.disk.cc --> machine.disk.cc: <<int seek>>
+machine.disk.cc --> machine.disk.cc: <<void>>
+machine.disk.cc -> machine.interrupt.cc: void Schedule(VoidFunctionPtr handler, int arg, int fromNow, IntType type)
+machine.interrupt.cc -> threads.list.cc: void SortedInsert(void *item, int sortKey)
+threads.list.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc --> machine.disk.cc: <<void>>
+machine.disk.cc --> filesys.synchdisk.cc: <<void>>
+filesys.synchdisk.cc -> threads.synch.cc: void P()
+threads.synch.cc -> machine.interrupt.cc: IntStatus SetLevel(IntStatus now)
+machine.interrupt.cc -> machine.interrupt.cc: void ChangeLevel(IntStatus old, IntStatus now)
+machine.interrupt.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> machine.interrupt.cc: void OneTick()
+machine.interrupt.cc -> machine.interrupt.cc: void ChangeLevel(IntStatus old, IntStatus now)
+machine.interrupt.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> machine.interrupt.cc: bool CheckIfDue(bool advanceClock)
+machine.interrupt.cc -> threads.list.cc: void *SortedRemove(int *keyPtr)
+threads.list.cc --> machine.interrupt.cc: <<void * thing>>
+machine.interrupt.cc -> threads.list.cc: void SortedInsert(void *item, int sortKey)
+threads.list.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> threads.list.cc: void SortedInsert(void *item, int sortKey)
+threads.list.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> machine.mipssim.cc: void DelayedLoad(int nextReg, int nextValue)
+machine.mipssim.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc --> machine.interrupt.cc: <<bool>>
+machine.interrupt.cc -> machine.interrupt.cc: void ChangeLevel(IntStatus old, IntStatus now)
+machine.interrupt.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc --> threads.synch.cc: <<IntStatus old>>
+threads.synch.cc -> threads.list.cc: void Append(void *item)
+threads.list.cc --> threads.synch.cc: <<void>>
+threads.synch.cc -> threads.thread.cc: void Sleep ()
+threads.thread.cc -> machine.interrupt.cc: IntStatus getLevel()
+machine.interrupt.cc --> threads.thread.cc: <<IntStatus level>>
+threads.thread.cc -> threads.scheduler.cc: Thread *FindNextToRun ()
+threads.scheduler.cc -> threads.list.cc: void *Remove()
+threads.list.cc -> threads.list.cc: void *SortedRemove(int *keyPtr)
+threads.list.cc --> threads.list.cc: <<void * thing>>
+threads.list.cc --> threads.scheduler.cc: <<void * thing>>
+threads.scheduler.cc --> threads.thread.cc: <<Thread *>>
+threads.thread.cc -> machine.interrupt.cc: void Idle()
+machine.interrupt.cc -> machine.interrupt.cc: bool CheckIfDue(bool advanceClock)
+machine.interrupt.cc -> threads.list.cc: void *SortedRemove(int *keyPtr)
+threads.list.cc --> machine.interrupt.cc: <<void * thing>>
+machine.interrupt.cc -> threads.list.cc: void SortedInsert(void *item, int sortKey)
+threads.list.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> threads.list.cc: void SortedInsert(void *item, int sortKey)
+threads.list.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> machine.mipssim.cc: void DelayedLoad(int nextReg, int nextValue)
+machine.mipssim.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc --> machine.interrupt.cc: <<bool>>
+machine.interrupt.cc -> machine.interrupt.cc: bool CheckIfDue(bool advanceClock)
+machine.interrupt.cc -> threads.list.cc: void *SortedRemove(int *keyPtr)
+threads.list.cc --> machine.interrupt.cc: <<void * thing>>
+machine.interrupt.cc -> threads.list.cc: void SortedInsert(void *item, int sortKey)
+threads.list.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> threads.list.cc: void SortedInsert(void *item, int sortKey)
+threads.list.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> machine.mipssim.cc: void DelayedLoad(int nextReg, int nextValue)
+machine.mipssim.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc --> machine.interrupt.cc: <<bool>>
+machine.interrupt.cc --> threads.thread.cc: <<void>>
+threads.thread.cc -> threads.scheduler.cc: void Run (Thread *nextThread)
+threads.scheduler.cc -> threads.thread.cc: void SaveUserState()
+threads.thread.cc -> machine.machine.cc: int ReadRegister(int num)
+machine.machine.cc --> threads.thread.cc: <<int>>
+threads.thread.cc --> threads.scheduler.cc: <<void>>
+threads.scheduler.cc -> userprog.addrspace.cc: void SaveState()
+userprog.addrspace.cc --> threads.scheduler.cc: <<void>>
+threads.scheduler.cc -> threads.thread.cc: void CheckOverflow()
+threads.thread.cc --> threads.scheduler.cc: <<void>>
+threads.scheduler.cc -> threads.thread.cc: void setStatus(ThreadStatus st)
+threads.thread.cc --> threads.scheduler.cc: <<void>>
+threads.scheduler.cc -> threads.thread.cc: void SWITCH(Thread *oldThread, Thread *newThread)
+threads.thread.cc --> threads.scheduler.cc: <<void>>
+threads.scheduler.cc -> threads.thread.cc: void RestoreUserState()
+threads.thread.cc -> machine.machine.cc: void WriteRegister(int num, int value)
+machine.machine.cc --> threads.thread.cc: <<void>>
+threads.thread.cc --> threads.scheduler.cc: <<void>>
+threads.scheduler.cc -> userprog.addrspace.cc: void RestoreState()
+userprog.addrspace.cc --> threads.scheduler.cc: <<void>>
+threads.scheduler.cc --> threads.thread.cc: <<void>>
+threads.thread.cc --> threads.synch.cc: <<void>>
+threads.synch.cc -> machine.interrupt.cc: IntStatus SetLevel(IntStatus now)
+machine.interrupt.cc -> machine.interrupt.cc: void ChangeLevel(IntStatus old, IntStatus now)
+machine.interrupt.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> machine.interrupt.cc: void OneTick()
+machine.interrupt.cc -> machine.interrupt.cc: void ChangeLevel(IntStatus old, IntStatus now)
+machine.interrupt.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> machine.interrupt.cc: bool CheckIfDue(bool advanceClock)
+machine.interrupt.cc -> threads.list.cc: void *SortedRemove(int *keyPtr)
+threads.list.cc --> machine.interrupt.cc: <<void * thing>>
+machine.interrupt.cc -> threads.list.cc: void SortedInsert(void *item, int sortKey)
+threads.list.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> threads.list.cc: void SortedInsert(void *item, int sortKey)
+threads.list.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> machine.mipssim.cc: void DelayedLoad(int nextReg, int nextValue)
+machine.mipssim.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc --> machine.interrupt.cc: <<bool>>
+machine.interrupt.cc -> machine.interrupt.cc: void ChangeLevel(IntStatus old, IntStatus now)
+machine.interrupt.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc --> threads.synch.cc: <<IntStatus old>>
+threads.synch.cc --> filesys.synchdisk.cc: <<void>>
+filesys.synchdisk.cc -> threads.synch.cc: void Release()
+threads.synch.cc --> filesys.synchdisk.cc: <<void>>
+filesys.synchdisk.cc --> filesys.openfile.cc: <<void>>
+filesys.openfile.cc --> filesys.directory.cc: <<void>>
+filesys.directory.cc --> filesys.filesys.cc: <<void>>
+filesys.filesys.cc -> filesys.directory.cc: int Find(char *name)
+filesys.directory.cc -> filesys.directory.cc: int FindIndex(char *name)
+filesys.directory.cc --> filesys.directory.cc: <<int>>
+filesys.directory.cc --> filesys.filesys.cc: <<int>>
+filesys.filesys.cc --> userprog.progtest.cc: <<OpenFile *openFile>>
+userprog.progtest.cc -> userprog.addrspace.cc: void InitRegisters()
+userprog.addrspace.cc -> machine.machine.cc: void WriteRegister(int num, int value)
+machine.machine.cc --> userprog.addrspace.cc: <<void>>
+userprog.addrspace.cc -> machine.machine.cc: void WriteRegister(int num, int value)
+machine.machine.cc --> userprog.addrspace.cc: <<void>>
+userprog.addrspace.cc -> machine.machine.cc: void WriteRegister(int num, int value)
+machine.machine.cc --> userprog.addrspace.cc: <<void>>
+userprog.addrspace.cc -> machine.machine.cc: void WriteRegister(int num, int value)
+machine.machine.cc --> userprog.addrspace.cc: <<void>>
+userprog.addrspace.cc --> userprog.progtest.cc: <<void>>
+userprog.progtest.cc -> userprog.addrspace.cc: void RestoreState()
+userprog.addrspace.cc --> userprog.progtest.cc: <<void>>
+userprog.progtest.cc -> machine.mipssim.cc: void Run()
+machine.mipssim.cc -> threads.thread.cc: void setStatus(ThreadStatus st)
+threads.thread.cc --> machine.mipssim.cc: <<void>>
+machine.mipssim.cc -> machine.mipssim.cc: void OneInstruction(Instruction *instr)
+machine.mipssim.cc -> machine.translate.cc: bool ReadMem(int addr, int size, int *value)
+machine.translate.cc -> machine.translate.cc: ExceptionType Translate(int virtAddr, int* physAddr, int size, bool writing)
+machine.translate.cc --> machine.translate.cc: <<ExceptionType>>
+machine.translate.cc -> machine.translate.cc: unsigned short ShortToHost(unsigned short shortword)
+machine.translate.cc --> machine.translate.cc: <<unsigned short>>
+machine.translate.cc -> machine.translate.cc: unsigned int WordToHost(unsigned int word)
+machine.translate.cc --> machine.translate.cc: <<unsigned int>>
+machine.translate.cc --> machine.mipssim.cc: <<bool>>
+machine.mipssim.cc -> machine.mipssim.cc: void Decode()
+machine.mipssim.cc --> machine.mipssim.cc: <<void>>
+machine.mipssim.cc -> machine.mipssim.cc: static int TypeToReg(RegType reg, Instruction *instr)
+machine.mipssim.cc --> machine.mipssim.cc: <<int>>
+machine.mipssim.cc -> machine.translate.cc: bool WriteMem(int addr, int size, int value)
+machine.translate.cc -> machine.translate.cc: ExceptionType Translate(int virtAddr, int* physAddr, int size, bool writing)
+machine.translate.cc --> machine.translate.cc: <<ExceptionType>>
+machine.translate.cc --> machine.mipssim.cc: <<bool>>
+machine.translate.cc -> machine.translate.cc: unsigned short ShortToMachine(unsigned short shortword)
+machine.translate.cc -> machine.translate.cc: unsigned short ShortToHost(unsigned short shortword)
+machine.translate.cc --> machine.translate.cc: <<unsigned short>>
+machine.translate.cc --> machine.translate.cc: <<unsigned short>>
+machine.translate.cc -> machine.translate.cc: unsigned int WordToMachine(unsigned int word)
+machine.translate.cc -> machine.translate.cc: unsigned int WordToHost(unsigned int word)
+machine.translate.cc --> machine.translate.cc: <<unsigned int>>
+machine.translate.cc --> machine.translate.cc: <<unsigned int>>
+machine.translate.cc --> machine.mipssim.cc: <<bool>>
+machine.mipssim.cc -> machine.mipssim.cc: void DelayedLoad(int nextReg, int nextValue)
+machine.mipssim.cc --> machine.mipssim.cc: <<void>>
+machine.mipssim.cc --> machine.mipssim.cc: <<void>>
+machine.mipssim.cc -> machine.interrupt.cc: void OneTick()
+machine.interrupt.cc -> machine.interrupt.cc: void ChangeLevel(IntStatus old, IntStatus now)
+machine.interrupt.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> machine.interrupt.cc: bool CheckIfDue(bool advanceClock)
+machine.interrupt.cc -> threads.list.cc: void *SortedRemove(int *keyPtr)
+threads.list.cc --> machine.interrupt.cc: <<void * thing>>
+machine.interrupt.cc -> threads.list.cc: void SortedInsert(void *item, int sortKey)
+threads.list.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> threads.list.cc: void SortedInsert(void *item, int sortKey)
+threads.list.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> machine.mipssim.cc: void DelayedLoad(int nextReg, int nextValue)
+machine.mipssim.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc --> machine.interrupt.cc: <<bool>>
+machine.interrupt.cc -> machine.interrupt.cc: void ChangeLevel(IntStatus old, IntStatus now)
+machine.interrupt.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc --> machine.mipssim.cc: <<void>>
+machine.mipssim.cc -> machine.machine.cc: void Debugger()
+machine.machine.cc -> machine.interrupt.cc: void DumpState()
+machine.interrupt.cc --> machine.machine.cc: <<void>>
+machine.machine.cc -> machine.machine.cc: void DumpState()
+machine.machine.cc ->machine.machine.cc: <<void>>
+machine.machine.cc --> machine.mipssim.cc: <<void>>
+machine.mipssim.cc --> userprog.progtest.cc: <<void>>
+userprog.progtest.cc -> machine.interrupt.cc: void Halt()
+machine.interrupt.cc -> machine.stats.cc: void Print()
+machine.stats.cc --> machine.interrupt.cc: <<void>>
+machine.interrupt.cc -> threads.system.cc: void Cleanup()
+threads.system.cc -> machine.sysdep.cc: void Exit(int exitCode)
+@enduml
+
