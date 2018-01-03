@@ -1,23 +1,20 @@
-# Nachos_Operating_Systems_Fall_2017
+Operating Systems nachos
 
-## Installation
+Implementing Fork system call:
 
-**Don't forget to fork the project because you have to work on this project with your own team in your own repository during this semester**
+1. Firstly we had to change the exception.cc in order to add a Fork handler. So when Fork is called an exception raises with the type of SC_Fork and we enter the else if statement. 
 
-1) `sudo apt-get install build-essential git csh lpr libc6-dev-i386 gcc-multilib g++-multilib` </br>
-2) `git clone https://github.com/sarsanaee/Nachos_Operating_Systems_Course.git` </br>
-3) `cd Nachos_Operating_Systems_Course` </br>
-4) Please extract source files from Necessary Package directory `tar -xf cse120su10-nachos.tgz -C ../`</br> 
-5) Please extract source files from Necessary Package directory `tar -xf mips-x86.linux-xgcc.tgz -C ../` </br>
-6) `cd ../nachos-3.4` </br>
-7) add the address of mips-x86.linux-xgcc directory to `prepfile.bash` in `nachos-3.4/code/prepfile.bash` don't forget to append a `/` at the end of the path</br>
-8) Look around the directories, README files and so on. </br>
-9) Go to the code directory `cd code` </br>
-10) You already know what is the `make` command so try it :) but do not expect everything goes well :)) </br>
+2. Our Fork takes a function of type void * and the child which was forked runs the function so then we have to return to the parent's instructions.
 
-##### If you do not want to follow previous instructions, you can refer to [this](http://homes.cs.washington.edu/~tom/nachos/), however, there are a lot of useful and interesting documents you probably want to read.
+3. For implementing the second step we should save the current PCReg into the prevPCReg and the nextPCReg should be saved to current PCReg and the instruction after nextPCReg should be saved to nextPCReg.
 
-## Here is the visual installation :)
+4. Afterwards we create the child thread and save the current running thread to child->parent so then we need to add the created child process to parent's children list. Then we save the retutn value of Fork (child's pid ) to the second register ( we need the value in the second register in order to pass it to join ).
 
-[![asciicast](https://asciinema.org/a/b6pc2zok0gagrmyp1e0oi67e2.png)](https://asciinema.org/a/b6pc2zok0gagrmyp1e0oi67e2)
+5. At the end we call child->Fork(myRun, myFunc) which is thread's Fork and not system call Fork. myRun is a function defined in exception.cc which does the following:
+it'll save myFunc's address to the child's current PCReg.
+then it'll save the future instruction to be run to nextPCReg.
+Finally we call machine->Run so now the child will run the function which was passed to Fork system call.
 
+6. After implementing Fork system call we needed a Join system call which it's job is actually just like wait ( it takes the forked child's pid and yields itself until it's child is done doing it;s job )
+
+7. At the end we handled Exit which finishes the current ( whether parent or child ) if current thread is child it signals the parent that it's done doing it's job and change it's status to BLOCKED.
