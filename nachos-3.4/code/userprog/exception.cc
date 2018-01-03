@@ -51,10 +51,12 @@
 //----------------------------------------------------------------------
 
 void myRun (int myFunc) {
-
+	//currentThread->RestoreUserState();
+	printf("fuck you pid: %d\n", currentThread->getPid());
 	machine->WriteRegister(PCReg, myFunc);
-	printf("running the freaking child\n");
-	machine->WriteRegister(2, currentThread->getPid());
+	machine->WriteRegister(NextPCReg, myFunc + 4);
+	printf("running the freaking child pid: %d\n", currentThread->getPid());
+	//machine->WriteRegister(2, currentThread->getPid());
 	printf("after writeRegyster\n");
 	machine->Run();
 }
@@ -70,7 +72,7 @@ ExceptionHandler(ExceptionType which)
 	DEBUG('a', "Shutdown, initiated by user program.\n");
    	interrupt->Halt();
     } else if ((which == SyscallException) && (type == SC_Fork)) {
-    	printf("entering fork\n");
+    	printf("entering fork pid: %d ppid: %d\n", currentThread->getPid(), currentThread->getPpid());
     	DEBUG('a', "Fork, initiated by user program.\n");
     	int myFunc = machine->ReadRegister(4);
 
@@ -94,21 +96,58 @@ ExceptionHandler(ExceptionType which)
 
 
     	// Change the return address register to zero and save state
-    	machine->WriteRegister(2, 0);
+    	//machine->WriteRegister(2, 10);
 
-    	child->SaveUserState();
+    	// child->SaveUserState();
 
     	child->Fork(myRun, myFunc);
+    	printf("after fork pid: %d ppid: %d\n", currentThread->getPid(), currentThread->getPpid());
+
+    	//currentThread->Yield();
+    	//printf("after Yield pid: %d ppid: %d\n", currentThread->getPid(), currentThread->getPpid());
 
 
     } else if ((which == SyscallException) && (type == SC_Exit)) {
-
+    	int exitStatus = machine->ReadRegister(4);
+    	printf("exit status: %d\n", exitStatus);
+    	printf("currentThread  pid: %d ppid: %d\n", currentThread->getPid(), currentThread->getPpid());
     	currentThread->Finish();
 
-    	//interrupt->Halt();
+    /*	if (currentThread->parent->getPid() > 1) {
+    		printf("test 1\n");
+    		currentThread->Finish();
+    		for (int i = 0; i < currentThread->parent->childCount; i++) {
+    			if (currentThread->parent->child_pids[i] == currentThread->getPid()) {
+    				currentThread->parent->child_status[i] = BLOCKED;
+    				break;
+    			}
+
+    		}
+    	}
+
+    	int flag = 0;
+
+    	for (int i = 0; i < currentThread->parent->childCount; i++) {
+    		if (currentThread->parent->child_status[i] != BLOCKED)
+    			flag = 1;
+
+    	}
+
+    	if (flag == 0)
+    		currentThread->parent->Finish();*/
 
 
-    } else {
+
+
+    } else if((which == SyscallException) && (type == SC_Yield)){
+        // Advance program counters
+          machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
+          machine->WriteRegister(PCReg, machine->ReadRegister(NextPCReg));
+          machine->WriteRegister(NextPCReg, machine->ReadRegister(NextPCReg)+4);
+
+          //Already present in thread.cc
+          currentThread->Yield();
+  } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);
 	ASSERT(FALSE);
     }

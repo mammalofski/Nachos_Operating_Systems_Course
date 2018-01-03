@@ -17,7 +17,7 @@
 
 int testFunc (int num) {
 
-	//Exit(10);
+	Exit(100);
 	return num;
 
 }
@@ -26,6 +26,8 @@ int
 main()
 {
     //Halt();
+
+	Fork(testFunc);
 
 	Fork(testFunc);
 	//

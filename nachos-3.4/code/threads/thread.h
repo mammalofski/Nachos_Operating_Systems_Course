@@ -81,6 +81,7 @@ class Thread {
     int* stackTop;			 // the current stack pointer
     int machineState[MachineStateSize];  // all registers except for stackTop
 
+
   public:
     Thread(char* debugName);		// initialize a Thread 
     ~Thread(); 				// deallocate a Thread
@@ -107,6 +108,7 @@ class Thread {
     int pid;
     int ppid;
     int childCount; // To store the number of children of the thread
+    int *child_status;
 
     void incrementChildCount(){
         childCount++;
@@ -145,7 +147,7 @@ class Thread {
 
   private:
     // some of the private data for this class is listed above
-    int *child_status;
+
 
     int* stack; 	 		// Bottom of the stack 
 					// NULL if this is the main thread
