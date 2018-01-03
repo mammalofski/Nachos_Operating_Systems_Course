@@ -61,6 +61,20 @@ void myRun (int myFunc) {
 	machine->Run();
 }
 
+int childIsAlive (int pid) {
+	int flag = 0;
+		  for (int i = 0; i < currentThread->childCount; i++) {
+		      		if (currentThread->child_pids[i] == pid &&
+		      				currentThread->child_status[i] == CHILD_LIVE) {
+		      			flag = 1;
+		      			printf("a live child has been found\n");
+		      		}
+
+
+		      	}
+		 return flag;
+}
+
 void
 ExceptionHandler(ExceptionType which)
 {
@@ -96,14 +110,17 @@ ExceptionHandler(ExceptionType which)
 
 
     	// Change the return address register to zero and save state
-    	//machine->WriteRegister(2, 10);
+    	machine->WriteRegister(2, 0);
 
     	child->SaveUserState();
+
+    	machine->WriteRegister(2, child->getPid());
 
     	child->Fork(myRun, myFunc);
     	printf("after fork pid: %d ppid: %d\n", currentThread->getPid(), currentThread->getPpid());
 
     	//currentThread->Yield();
+    	//Join(child->getPid());
     	//printf("after Yield pid: %d ppid: %d\n", currentThread->getPid(), currentThread->getPpid());
 
 
@@ -111,6 +128,15 @@ ExceptionHandler(ExceptionType which)
     	int exitStatus = machine->ReadRegister(4);
     	printf("exit status: %d\n", exitStatus);
     	printf("currentThread  pid: %d ppid: %d\n", currentThread->getPid(), currentThread->getPpid());
+
+    	if (currentThread->getPpid() > 0)
+    		for (int i = 0; i < currentThread->parent->childCount; i++) {
+    			if (currentThread->parent->child_pids[i] == currentThread->getPid())
+    				currentThread->parent->child_status[i] = BLOCKED;
+    		}
+
+    	printf("ending thread pid: %d\n", currentThread->getPid());
+
     	currentThread->Finish();
 
     /*	if (currentThread->parent->getPid() > 1) {
@@ -148,8 +174,28 @@ ExceptionHandler(ExceptionType which)
           //Already present in thread.cc
           currentThread->Yield();
   } else if ((which == SyscallException) && (type == SC_Join)) {
+	  machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
+
+	      	machine->WriteRegister(PCReg, machine->ReadRegister(NextPCReg));
+
+	      	machine->WriteRegister(NextPCReg, machine->ReadRegister(NextPCReg)+4);
 
 	  printf("joining pid: %d", currentThread->getPid());
+	  int pid = machine->ReadRegister(4);
+
+	  printf("arg pid: %d\n", pid);
+
+
+
+	  while (childIsAlive(pid) == 1) {
+		  printf("parent is yielding\n");
+		  currentThread->Yield();
+	  }
+	  printf("parent has no alive child\n");
+
+	  //currentThread->Finish();
+
+
 
   } else {
 	printf("Unexpected user mode exception %d %d\n", which, type);

@@ -26,8 +26,16 @@ int
 main()
 {
     //Halt();
+	int rc;
 
-	Fork(testFunc);
+	rc = Fork(testFunc);
+
+	Join(rc);
+
+	rc = Fork(testFunc);
+
+	Join(rc);
+
 
 	//Fork(testFunc);
 	//
